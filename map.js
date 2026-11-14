@@ -78,7 +78,6 @@ map.on('load', async () => {
 
     function updateTimeDisplay() {
         let timeFilter = Number(timeSlider.value);
-    
         if (timeFilter === -1) {
             selectedTime.textContent = '';
             anyTimeLabel.style.display = 'block';
@@ -86,7 +85,6 @@ map.on('load', async () => {
             selectedTime.textContent = formatTime(timeFilter);
             anyTimeLabel.style.display = 'none';
         }
-    
         if (dataLoaded) {
             updateScatterPlot(timeFilter);
         }
@@ -151,13 +149,19 @@ map.on('load', async () => {
             .domain([0, d3.max(stations, (d) => d.totalTraffic)])
             .range([0, 25]);
 
+        const stationFlow = d3.scaleQuantize()
+            .domain([0, 1])
+            .range([0, 0.5, 1]);
+
         const circles = svg
             .selectAll('circle')
             .data(stations)
             .enter()
             .append('circle')
             .attr('r', (d) => radiusScale(d.totalTraffic))
-            .attr('fill', 'steelblue')
+            .style('--departure-ratio', (d) =>
+                stationFlow(d.totalTraffic ? d.departures / d.totalTraffic : 0.5)
+            )
             .attr('stroke', 'white')
             .attr('stroke-width', 1)
             .each(function (d) {
@@ -166,7 +170,7 @@ map.on('load', async () => {
                     .text(`${d.totalTraffic} trips (${d.departures} departures, ${d.arrivals} arrivals)`);
             });
 
-        updateScatterPlot = function(timeFilter) {
+        updateScatterPlot = function (timeFilter) {
             const filteredTrips = filterTripsbyTime(trips, timeFilter);
             const filteredStations = computeStationTraffic(stations, filteredTrips);
 
@@ -178,7 +182,10 @@ map.on('load', async () => {
 
             circles
                 .data(filteredStations, (d) => d.short_name)
-                .attr('r', (d) => radiusScale(d.totalTraffic));
+                .attr('r', (d) => radiusScale(d.totalTraffic))
+                .style('--departure-ratio', (d) =>
+                    stationFlow(d.totalTraffic ? d.departures / d.totalTraffic : 0.5)
+                );
 
             circles
                 .select('title')

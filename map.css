@@ -13,8 +13,34 @@
     pointer-events: none;
 }
 
+#map svg circle,
+.legend > div {
+    --color-departures: steelblue;
+    --color-arrivals: darkorange;
+    --color: color-mix(
+        in oklch,
+        var(--color-departures) calc(100% * var(--departure-ratio)),
+        var(--color-arrivals)
+    );
+}
+
 #map svg circle {
+    fill: var(--color);
     fill-opacity: 0.6;
     stroke: white;
     pointer-events: auto;
+}
+
+.legend {
+    display: flex;
+    gap: 1px;
+    margin-block: 1em;
+}
+
+.legend > div {
+    flex: 1;
+    background: var(--color);
+    color: white;
+    padding: 0.5em 1em;
+    text-align: center;
 }
