@@ -8,3 +8,28 @@ body {
     margin: auto;
     padding: 1em;
 }
+
+header {
+    display: flex;
+    gap: 1em;
+    align-items: baseline;
+}
+
+header label {
+    margin-left: auto;
+    text-align: right;
+}
+
+#time-slider {
+    width: 250px;
+}
+
+#selected-time,
+#any-time {
+    display: block;
+}
+
+#any-time {
+    color: gray;
+    font-style: italic;
+}
